@@ -19,7 +19,11 @@ public class MakeGrid : MonoBehaviour
                 float arrayXPos = x * xOffset;
                 float arrayYPos = 0;
                 GameObject newtile = Instantiate(GameManager.Instance.terrainPrefab);
+                int[,] blackTileIndex = new int[x, y];
 
+                GameObject newPlayer1BlackTile = Instantiate(GameManager.Instance.blackTile);
+                GameObject newPlayer2BlackTile = Instantiate(GameManager.Instance.blackTile);
+            
                 if (y % 2 == 1) {
                     arrayXPos += xOffset/2;
                 }
@@ -35,6 +39,17 @@ public class MakeGrid : MonoBehaviour
                 GameManager.Instance.setTileIndexYDic(newtile.name, y);
                 GameManager.Instance.setTileObjectByIndex("xIndex_"+x.ToString()+"yIndex_"+y.ToString(),newtile);
 
+
+                newPlayer1BlackTile.name = "player1black_" + x + "_" + y;
+                newPlayer2BlackTile.name = "player2black_" + x + "_" + y;
+                GameManager.Instance.setPlayer1BlackTiles(newPlayer1BlackTile.name,newPlayer1BlackTile);
+                GameManager.Instance.setPlayer2BlackTiles(newPlayer2BlackTile.name, newPlayer2BlackTile);
+                newPlayer1BlackTile.GetComponent<TileScript>().x = x;
+                newPlayer1BlackTile.GetComponent<TileScript>().y = y;
+                newPlayer2BlackTile.GetComponent<TileScript>().x = x;
+                newPlayer2BlackTile.GetComponent<TileScript>().y = y;
+                newPlayer1BlackTile.transform.position = newtile.transform.position;
+                newPlayer2BlackTile.transform.position = newtile.transform.position;
                 // GameManager.Instance.setSprite(0, x, y);
                 ///*
                 float spriteIndex = Random.Range(0,100);
@@ -67,6 +82,19 @@ public class MakeGrid : MonoBehaviour
                 }
             }
         }
+        int middleIndexX = (GameManager.Instance.width - 1) / 2;
+        int heightIndexY = GameManager.Instance.height - 1;
+        GameManager.Instance.removePlayer1BlackTile(middleIndexX,0);
+        GameManager.Instance.removePlayer1BlackTile(middleIndexX - 1, 0);
+        GameManager.Instance.removePlayer1BlackTile(middleIndexX + 1, 0);
+        GameManager.Instance.removePlayer1BlackTile(middleIndexX - 1, 1);
+        GameManager.Instance.removePlayer1BlackTile(middleIndexX, 1);
+
+        GameManager.Instance.removePlayer2BlackTile(middleIndexX, heightIndexY);
+        GameManager.Instance.removePlayer2BlackTile(middleIndexX - 1, heightIndexY);
+        GameManager.Instance.removePlayer2BlackTile(middleIndexX + 1, heightIndexY);
+        GameManager.Instance.removePlayer2BlackTile(middleIndexX, heightIndexY-1);
+        GameManager.Instance.removePlayer2BlackTile(middleIndexX + 1, heightIndexY-1);
     }
 
     // Update is called once per frame

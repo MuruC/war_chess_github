@@ -94,14 +94,27 @@ public class MouseController : MonoBehaviour
         if (Input.GetMouseButton(0))
         {
             pTile.GetComponent<SpriteRenderer>().color = Color.red;
-            if (selectedUnit != null && clickUnit == false && !CheckIfHasSoldierInGrid() && soldierActionScript.actionModeName != "Attack")
+            if(selectedUnit == null)
             {
-                selectedUnit.destination = pTile.transform.position;
-                int x = GameManager.Instance.getTileIndexXDic(pTile.name);
-                GameManager.Instance.setUnitPosXIndex(selectedUnitObject.name, x);
-                int y = GameManager.Instance.getTileIndexYDic(pTile.name);
-                GameManager.Instance.setUnitPosYIndex(selectedUnitObject.name, y);
-                Debug.Log("Destination: "+"xIndex: " + x + " yIndex: " + y);
+                return;
+            }
+
+            SoldierType.Soldiers thisSelectedUnitType = selectedUnit.m_pSoldier;
+            if (clickUnit == false && !CheckIfHasSoldierInGrid() && soldierActionScript.actionModeName != "Attack"
+               )
+                
+            {
+               // && thisSelectedUnitType.getCurrentMoveStep() > 0
+               // if (selectedUnit.greenTiles.Contains(pTile)) {
+                    selectedUnit.destination = pTile.transform.position;
+                    int x = GameManager.Instance.getTileIndexXDic(pTile.name);
+                    GameManager.Instance.setUnitPosXIndex(selectedUnitObject.name, x);
+                    int y = GameManager.Instance.getTileIndexYDic(pTile.name);
+                    GameManager.Instance.setUnitPosYIndex(selectedUnitObject.name, y);
+                    Debug.Log("Destination: " + "xIndex: " + x + " yIndex: " + y);
+                    //thisSelectedUnitType.setCurrentMoveStep(1);
+                    Debug.Log("thisSelectedUnitType.getCurrentMoveStep(): "+ thisSelectedUnitType.getCurrentMoveStep());
+                //}
             }
         }
 
@@ -141,7 +154,9 @@ public class MouseController : MonoBehaviour
             //*/
             showUnitInformation(true);
             // change tiles around the unit 改变周围六边形的颜色
-            changeHexColor();
+            if (selectedUnit.m_pSoldier.getCurrentMoveStep() > 0) {
+                changeHexColor();
+            }
             //testIndex();
 
         }
@@ -352,9 +367,13 @@ public class MouseController : MonoBehaviour
 
     //显示士兵信息
     public  void showUnitInformation(bool bShowInformation) {
+        if (selectedUnit == null) {
+            return;
+        }
+
         if (bShowInformation == true)
         {
-            SoldierType.Soldiers thisUnit = new SoldierType.Soldiers(GameManager.Instance.getSoldierTypeIndex(selectedUnitObject.name), GameManager.Instance.getSoldierAlign(selectedUnitObject.name));
+            SoldierType.Soldiers thisUnit = selectedUnit.m_pSoldier;
             int maxHP = thisUnit.getMaxHealth();
             UIManager.Instance.maxHP.GetComponent<Text>().text = maxHP.ToString();
             int attack = thisUnit.getBasicAttack();

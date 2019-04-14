@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
-
+    public Sprite blackTile;
     public List<Sprite> unitSprites;
     public Sprite noSprite;
     [Header("Recruit menu")]

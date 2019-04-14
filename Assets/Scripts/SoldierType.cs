@@ -450,7 +450,7 @@ public class SoldierType : MonoBehaviour
         }
 
         public void setCurrentMoveStep(int move) {
-            currentMoveStep -= move;
+            currentMoveStep = move;
         }
 
         public int getCurrentMoveStep() {

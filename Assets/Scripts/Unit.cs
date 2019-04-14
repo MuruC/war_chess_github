@@ -14,11 +14,17 @@ public class Unit : MonoBehaviour
     public GameObject mouseController;
     public List<GameObject> greenTiles;
     public bool bMoving = false;
+    GameObject myPlayerAlign;
+    PlayerAlign.Players m_player1;
+    PlayerAlign.Players m_player2;
     // Start is called before the first frame update
     void Start()
     {
         destination = transform.position;
         greenTiles = new List<GameObject>();
+        myPlayerAlign = GameObject.Find("Players");
+        m_player1 = myPlayerAlign.GetComponent<PlayerAlign>().m_Player1;
+        m_player2 = myPlayerAlign.GetComponent<PlayerAlign>().m_Player2;
         //unitAlign = 0;
     }
 
@@ -49,6 +55,19 @@ public class Unit : MonoBehaviour
         gameObject.GetComponent<SpriteRenderer>().sprite = UIManager.Instance.unitSprites[spriteIndex];
 
         thisUnitHasBeenClicked = false;
+
+        if (m_pSoldier != null && m_pSoldier.getCurrentHP() <= 0) {
+            int money = m_pSoldier.getMoneyByKillingEnemy();
+            int xp = m_pSoldier.getXPByKillingEnemy();
+            if (unitAlign == 0) {
+                m_player2.setMoney(money + m_player2.getMoney());
+                m_player2.setXP(xp+m_player2.getXP());
+            } else if (unitAlign == 1) {
+                m_player1.setMoney(money + m_player1.getMoney());
+                m_player1.setXP(xp + m_player1.getXP());
+            }
+            Destroy(gameObject);
+        }
     }
 
     //当士兵到达目的地之后，绿色消失
@@ -62,6 +81,7 @@ public class Unit : MonoBehaviour
             greenTiles.Clear();
         }
         //thisUnitHasBeenClicked = false;
+        m_pSoldier.setCurrentMoveStep(m_pSoldier.getCurrentMoveStep() - 1);
     }
 
     public void setEntity(int nType,int nAlign) {

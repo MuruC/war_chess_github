@@ -61,11 +61,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\AttackArrowRotation.cs" />
+    <Compile Include="Assets\Scripts\BlackTileController.cs" />
     <Compile Include="Assets\Scripts\CameraController.cs" />
+    <Compile Include="Assets\Scripts\CameraShake.cs" />
     <Compile Include="Assets\Scripts\CanvasController.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\MakeGrid.cs" />
     <Compile Include="Assets\Scripts\MouseController.cs" />
+    <Compile Include="Assets\Scripts\PlayerAlign.cs" />
     <Compile Include="Assets\Scripts\SoldierActions.cs" />
     <Compile Include="Assets\Scripts\SoldierType.cs" />
     <Compile Include="Assets\Scripts\TileScript.cs" />

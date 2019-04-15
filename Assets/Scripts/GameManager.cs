@@ -29,7 +29,8 @@ public class GameManager : MonoBehaviour
     GameObject gridHolder;
     private Dictionary<string, int> tileIndexXDic;
     private Dictionary<string, int> tileIndexYDic;
-    private Dictionary<string, GameObject> soldierDic;
+    private Dictionary<string, GameObject> soldier1Dic;
+    private Dictionary<string, GameObject> soldier2Dic;
     private Dictionary<string, int> unitPosXIndex;
     private Dictionary<string, int> unitPosYIndex;
     private Dictionary<string, GameObject> tileObjectByIndex;
@@ -43,7 +44,8 @@ public class GameManager : MonoBehaviour
     public GameObject blackTile;
 
     public GameObject playerController;
-    PlayerAlign.Players myPlayer1;
+    public PlayerAlign.Players myPlayer1;
+    public PlayerAlign.Players myPlayer2;
     PlayerAlign playerAlignScript;
     // Start is called before the first frame update
     void Start()
@@ -108,12 +110,22 @@ public class GameManager : MonoBehaviour
         return tileIndexYDic[tileName];
     }
 
-    public void setSoldierObjectDic(string soldierName, GameObject soldierUnit) {
-        soldierDic.Add(soldierName, soldierUnit);
+    public void setSoldierObjectDic1(string soldierName, GameObject soldierUnit) {
+        soldier1Dic.Add(soldierName, soldierUnit);
     }
 
-    public GameObject getSoldierUnit(string soldierName) {
-        return soldierDic[soldierName];
+    public GameObject getSoldier1Unit1(string soldierName) {
+        return soldier1Dic[soldierName];
+    }
+
+    public void setSoldierObjectDic2(string soldierName, GameObject soldierUnit)
+    {
+        soldier2Dic.Add(soldierName, soldierUnit);
+    }
+
+    public GameObject getSoldierUnit2(string soldierName)
+    {
+        return soldier2Dic[soldierName];
     }
 
     public void setUnitPosXIndex(string soldierName, int posXIndex) {
@@ -154,7 +166,11 @@ public class GameManager : MonoBehaviour
     public int getSoldierAlign(string unitName) { return soldierType[unitName]; }
     //改变回合
     public void setTurn() {
-        // mouseControllerScript.selectedUnitObject = null;
+        if (mouseControllerScript.selectedUnitObject != null)
+        {
+            mouseControllerScript.selectedUnitObject = null;
+        }
+ 
         UIManager.Instance.soldierActionPanel.SetActive(false);
         mouseControllerScript.showUnitInformation(false);
 
@@ -170,15 +186,57 @@ public class GameManager : MonoBehaviour
         {
             turn = 1;
             myMainCamera.transform.position = new Vector3(0, 12, -10);
-            if (mouseControllerScript.selectedUnitObject.GetComponent<SpriteRenderer>() != null) {
-                mouseControllerScript.selectedUnitObject.GetComponent<SpriteRenderer>().color = new Color(255, 185, 0);
+            //玩家金钱自然增长2
+            myPlayer2.modifyMoney(2);
+            ///*
+            if (soldier2Dic.Count > 0)
+            {
+                for (int i = 0; i < soldier2Dic.Count; i++)
+                {
+                    if (soldier2Dic.ElementAt(i).Value == null)
+                    {
+                        return;
+                    }
+                    soldier2Dic.ElementAt(i).Value.GetComponent<Unit>().m_pSoldier.resetState();
+                    soldier2Dic.ElementAt(i).Value.GetComponent<SpriteRenderer>().color = new Color(253, 0, 255);
+                }
             }
+            //*/
+            if (soldier1Dic.Count > 0)
+            {
+                for (int i = 0; i < soldier1Dic.Count; i++)
+                {
+                    if (soldier1Dic.ElementAt(i).Value == null) {
+                        return;
+                    }
+                    soldier1Dic.ElementAt(i).Value.GetComponent<SpriteRenderer>().color = new Color(255, 185, 0);
+                    
+                }
+            }
+
         }
         else {
             turn = 0;
+            //玩家金钱自然增长2
+            myPlayer1.modifyMoney(2);
             myMainCamera.transform.position = new Vector3(0, 0, -10);
-            if (mouseControllerScript.selectedUnitObject.GetComponent<SpriteRenderer>() != null) {
-                mouseControllerScript.selectedUnitObject.GetComponent<SpriteRenderer>().color = new Color(253, 0, 255);
+            ///*
+            if (soldier1Dic.Count > 0)
+            {
+                for (int i = 0; i < soldier1Dic.Count; i++)
+                {
+                    if (soldier1Dic.ElementAt(i).Value == null) { return; }
+                    soldier1Dic.ElementAt(i).Value.GetComponent<Unit>().m_pSoldier.resetState();
+                }
+            }
+           // */
+            if (soldier2Dic.Count > 0)
+            {
+                for (int i = 0; i < soldier1Dic.Count; i++)
+                {
+                    if (soldier2Dic.ElementAt(i).Value == null) { return; }
+                    soldier2Dic.ElementAt(i).Value.GetComponent<SpriteRenderer>().color = new Color(253, 0, 255);
+                }
             }
         }
         restoreAllHexColor();
@@ -215,12 +273,20 @@ public class GameManager : MonoBehaviour
             if (getTurn() == 0) {
                 for (int i = 0; i < player1BlackTiles.Count; i++)
                 {
+                    if (player1BlackTiles.ElementAt(i).Value == null)
+                    {
+                        return;
+                    }
                     player1BlackTiles.ElementAt(i).Value.SetActive(true);
                 }
 
             } else if (getTurn() == 1) {
                 for (int i = 0; i < player1BlackTiles.Count; i++)
                 {
+                    if (player1BlackTiles.ElementAt(i).Value == null)
+                    {
+                        return;
+                    }
                     player1BlackTiles.ElementAt(i).Value.SetActive(false);
                 }
             }
@@ -251,6 +317,9 @@ public class GameManager : MonoBehaviour
             {
                 for (int i = 0; i < player1BlackTiles.Count; i++)
                 {
+                    if (player2BlackTiles.ElementAt(i).Value == null) {
+                        return;
+                    }
                     player2BlackTiles.ElementAt(i).Value.SetActive(true);
                 }
 
@@ -259,6 +328,10 @@ public class GameManager : MonoBehaviour
             {
                 for (int i = 0; i < player2BlackTiles.Count; i++)
                 {
+                    if (player2BlackTiles.ElementAt(i).Value == null)
+                    {
+                        return;
+                    }
                     player2BlackTiles.ElementAt(i).Value.SetActive(false);
                 }
             }
@@ -291,7 +364,8 @@ public class GameManager : MonoBehaviour
         gridHolder.transform.position = new Vector3(-1f, 0.5f, 0);
         tileIndexXDic = new Dictionary<string, int>();
         tileIndexYDic = new Dictionary<string, int>();
-        soldierDic = new Dictionary<string, GameObject>();
+        soldier1Dic = new Dictionary<string, GameObject>();
+        soldier2Dic = new Dictionary<string, GameObject>();
         unitPosXIndex = new Dictionary<string, int>();
         unitPosYIndex = new Dictionary<string, int>();
         tileObjectByIndex = new Dictionary<string, GameObject>();
@@ -301,9 +375,8 @@ public class GameManager : MonoBehaviour
 
         player1BlackTiles = new Dictionary<string, GameObject>();
         player2BlackTiles = new Dictionary<string, GameObject>();
-        mouseControllerScript = mouseController.GetComponent<MouseController>();
-
-        myPlayer1 = playerController.GetComponent<PlayerAlign>().m_Player1;
         playerAlignScript = playerController.GetComponent<PlayerAlign>();
+
+        mouseControllerScript = mouseController.GetComponent<MouseController>();
     }
 }

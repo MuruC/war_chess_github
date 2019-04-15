@@ -55,16 +55,22 @@ public class MakeGrid : MonoBehaviour
                 float spriteIndex = Random.Range(0,100);
                 if (spriteIndex <= 25) {
                     GameManager.Instance.setSprite(0, x, y);
+                    newtile.GetComponent<TileScript>().spriteType = 0;
                 } else if (spriteIndex > 25 && spriteIndex <= 50) {
                     GameManager.Instance.setSprite(3, x, y);
+                    newtile.GetComponent<TileScript>().spriteType = 3;
                 } else if (spriteIndex > 50 && spriteIndex <= 65) {
                     GameManager.Instance.setSprite(1, x, y);
+                    newtile.GetComponent<TileScript>().spriteType = 1;
                 } else if (spriteIndex > 65 && spriteIndex < 80) {
                     GameManager.Instance.setSprite(2, x, y);
+                    newtile.GetComponent<TileScript>().spriteType = 2;
                 } else if (spriteIndex >= 80 && spriteIndex < 90) {
                     GameManager.Instance.setSprite(4, x, y);
+                    newtile.GetComponent<TileScript>().spriteType = 4;
                 } else if (spriteIndex >= 90) {
                     GameManager.Instance.setSprite(5, x, y);
+                    newtile.GetComponent<TileScript>().spriteType = 5;
                 }
                 // */
 

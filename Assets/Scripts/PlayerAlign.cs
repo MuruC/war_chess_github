@@ -28,9 +28,14 @@ public class PlayerAlign : MonoBehaviour
         public int getMoney() {
             return currentMoney;
         }
+        public void modifyMoney(int value)
+        {
+            currentMoney += value;
+        }
         public void setXP(int XP) {
             currentXP = XP;
         }
+
         public int getXP() {
             return currentXP;
         }
@@ -123,6 +128,9 @@ public class PlayerAlign : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (GameManager.Instance == null) {
+            return;
+        }
         int currentAlign = GameManager.Instance.getTurn();
         if (currentAlign == 0) {
             if (m_Player1 == null) {
@@ -151,10 +159,12 @@ public class PlayerAlign : MonoBehaviour
 
     public void setPlayer1(int nAlign) {
         m_Player1 = new PlayerAlign.Players(nAlign);
+        GameManager.Instance.myPlayer1 = m_Player1;
     }
 
     public void setPlayer2(int nAlign)
     {
         m_Player2 = new PlayerAlign.Players(nAlign);
+        GameManager.Instance.myPlayer2 = m_Player2;
     }
 }

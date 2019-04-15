@@ -5,6 +5,8 @@ using UnityEngine;
 public class Unit : MonoBehaviour
 {
     public Vector2 destination;
+    public int destinationXIndex;
+    public int destinationYIndex;
     public SoldierType.Soldiers m_pSoldier;
     public int entityType;
     public int unitAlign;
@@ -17,6 +19,8 @@ public class Unit : MonoBehaviour
     GameObject myPlayerAlign;
     PlayerAlign.Players m_player1;
     PlayerAlign.Players m_player2;
+
+    public bool beenUpgraded;
     // Start is called before the first frame update
     void Start()
     {
@@ -81,6 +85,28 @@ public class Unit : MonoBehaviour
             greenTiles.Clear();
         }
         //thisUnitHasBeenClicked = false;
+        GameObject pTile = GameObject.Find("Terrain_" + destinationXIndex.ToString() + "_" + destinationYIndex.ToString());
+        int spriteType = pTile.GetComponent<TileScript>().spriteType;
+        //碰到金矿图，金钱+15
+        if (spriteType == 4)
+        {
+            if (GameManager.Instance.getTurn() == 0)
+            {
+                m_player1.modifyMoney(15);
+            }
+            else if (GameManager.Instance.getTurn() == 1)
+            {
+                m_player2.modifyMoney(15);
+            }
+            pTile.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.terrainSprites[3];
+            pTile.GetComponent<TileScript>().spriteType = 3;
+        }
+        //碰到奶牛图，血量+10
+        if (spriteType == 5) {
+            m_pSoldier.modifyHP(10);
+            pTile.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.terrainSprites[0];
+            pTile.GetComponent<TileScript>().spriteType = 0;
+        }
         m_pSoldier.setCurrentMoveStep(m_pSoldier.getCurrentMoveStep() - 1);
     }
 

@@ -14,13 +14,18 @@ public class MouseController : MonoBehaviour
 
     SoldierActions soldierActionScript;
     public GameObject soldierActionController;
-
+    PlayerAlign.Players player1;
+    PlayerAlign.Players player2;
+    PlayerAlign playerScript;
     // Start is called before the first frame update
     void Start()
     {
         selectedUnitObject = new GameObject();
         selectedUnitName = " ";
         soldierActionScript = soldierActionController.GetComponent<SoldierActions>();
+        playerScript = GameObject.Find("Players").GetComponent<PlayerAlign>();
+        player1 = playerScript.m_Player1;
+        player2 = playerScript.m_Player2;
     }
 
     public bool CheckIfHasSoldierInGrid()
@@ -104,16 +109,18 @@ public class MouseController : MonoBehaviour
                )
                 
             {
-               // && thisSelectedUnitType.getCurrentMoveStep() > 0
-               // if (selectedUnit.greenTiles.Contains(pTile)) {
+                // && thisSelectedUnitType.getCurrentMoveStep() > 0
+                //if (selectedUnit.greenTiles.Contains(pTile)) {
+                    if (selectedUnitObject == null) { return; }
                     selectedUnit.destination = pTile.transform.position;
                     int x = GameManager.Instance.getTileIndexXDic(pTile.name);
                     GameManager.Instance.setUnitPosXIndex(selectedUnitObject.name, x);
                     int y = GameManager.Instance.getTileIndexYDic(pTile.name);
                     GameManager.Instance.setUnitPosYIndex(selectedUnitObject.name, y);
+                    selectedUnit.destinationXIndex = x;
+                    selectedUnit.destinationYIndex = y;
                     Debug.Log("Destination: " + "xIndex: " + x + " yIndex: " + y);
                     //thisSelectedUnitType.setCurrentMoveStep(1);
-                    Debug.Log("thisSelectedUnitType.getCurrentMoveStep(): "+ thisSelectedUnitType.getCurrentMoveStep());
                 //}
             }
         }
@@ -157,18 +164,12 @@ public class MouseController : MonoBehaviour
             if (selectedUnit.m_pSoldier.getCurrentMoveStep() > 0) {
                 changeHexColor();
             }
-            //testIndex();
 
         }
 
 
     }
 
-    void testIndex() {
-        int a = GameManager.Instance.getUnitPosXIndex(selectedUnitObject.name);
-        int b = GameManager.Instance.getUnitPosYIndex(selectedUnitObject.name);
-        Debug.Log("selectedUnit x index: " + a + " selectedUnit y index: " + b);
-    }
 
     //改变周围六边形颜色
     public void changeHexColor() {
@@ -360,8 +361,28 @@ public class MouseController : MonoBehaviour
 //特殊兵种无法进入特殊地形
     void checkTerrain(int indexX,int IndexY)
     {
-        selectedUnit.greenTiles.Add(GameManager.Instance.getTileObjectByIndex("xIndex_" + indexX.ToString() + "yIndex_" + IndexY.ToString()));
-        GameManager.Instance.getTileObjectByIndex("xIndex_" + indexX.ToString() + "yIndex_" + IndexY.ToString()).GetComponent<SpriteRenderer>().color = Color.green;
+        GameObject terrain = GameManager.Instance.getTileObjectByIndex("xIndex_" + indexX.ToString() + "yIndex_" + IndexY.ToString());
+        //骑兵和坦克不能进入湖水地形
+        if (terrain.GetComponent<TileScript>().spriteType == 1) {
+            if (selectedUnit.entityType != 3 && selectedUnit.entityType != 7) {
+                selectedUnit.greenTiles.Add(terrain);
+                GameManager.Instance.getTileObjectByIndex("xIndex_" + indexX.ToString() + "yIndex_" + IndexY.ToString()).GetComponent<SpriteRenderer>().color = Color.green;
+            }
+        }
+        //骑兵坦克和火炮不能进入山地
+        if (terrain.GetComponent<TileScript>().spriteType == 2)
+        {
+            if (selectedUnit.entityType != 3 && selectedUnit.entityType != 7 && selectedUnit.entityType != 5)
+            {
+                selectedUnit.greenTiles.Add(terrain);
+                GameManager.Instance.getTileObjectByIndex("xIndex_" + indexX.ToString() + "yIndex_" + IndexY.ToString()).GetComponent<SpriteRenderer>().color = Color.green;
+            }
+        }
+
+        if (terrain.GetComponent<TileScript>().spriteType != 2 && terrain.GetComponent<TileScript>().spriteType != 1) {
+            selectedUnit.greenTiles.Add(terrain);
+            GameManager.Instance.getTileObjectByIndex("xIndex_" + indexX.ToString() + "yIndex_" + IndexY.ToString()).GetComponent<SpriteRenderer>().color = Color.green;
+        }
     }
 
 
@@ -374,9 +395,9 @@ public class MouseController : MonoBehaviour
         if (bShowInformation == true)
         {
             SoldierType.Soldiers thisUnit = selectedUnit.m_pSoldier;
-            int maxHP = thisUnit.getMaxHealth();
+            int maxHP = thisUnit.getMaxHP();
             UIManager.Instance.maxHP.GetComponent<Text>().text = maxHP.ToString();
-            int attack = thisUnit.getBasicAttack();
+            int attack = thisUnit.getAttack();
             UIManager.Instance.attackValue.GetComponent<Text>().text = attack.ToString();
             int maxStep = thisUnit.getMaxMoveStep();
             UIManager.Instance.maxMoveStep.GetComponent<Text>().text = maxStep.ToString();

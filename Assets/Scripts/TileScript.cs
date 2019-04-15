@@ -6,6 +6,7 @@ public class TileScript : MonoBehaviour
 {
     public int x;
     public int y;
+    public int spriteType;
     // Start is called before the first frame update
     void Start()
     {

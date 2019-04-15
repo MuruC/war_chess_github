@@ -44,13 +44,18 @@ public class UnitSpawner : MonoBehaviour
         else{
             pSoldierUnit.GetComponent<SpriteRenderer>().color = new Color(255, 185, 0);
         }
-        GameManager.Instance.setSoldierObjectDic(pSoldierUnit.name, pSoldierUnit);
+        if (GameManager.Instance.getTurn() == 0)
+        {
+            GameManager.Instance.setSoldierObjectDic1(pSoldierUnit.name, pSoldierUnit);
+        }
+        else {
+            GameManager.Instance.setSoldierObjectDic2(pSoldierUnit.name, pSoldierUnit);
+        }
         GameManager.Instance.setUnitPosXIndex(pSoldierUnit.name,posXIndex);
         GameManager.Instance.setUnitPosYIndex(pSoldierUnit.name, posYIndex);
         GameManager.Instance.setSoldierAlign(pSoldierUnit.name,nAlign);
         GameManager.Instance.setSoldierType(pSoldierUnit.name,nType);
         //Debug.Log("pSoldierUnit.name: "+ pSoldierUnit.name+ " pSoldierUnit posXIndex: "+ GameManager.Instance.getUnitPosXIndex(pSoldierUnit.name) + " pSoldierUnit posYIndex: " + GameManager.Instance.getUnitPosYIndex(pSoldierUnit.name));
         totalUnitNum++;
-        
     }
 }

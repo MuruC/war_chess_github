@@ -75,10 +75,11 @@ public class SoldierActions : MonoBehaviour
                                             preEnemyObject.GetComponent<SpriteRenderer>().color = new Color(255, 185, 0);
                                         }
                                     }
-                                pressLeftMouseButtonToAttack(enemyObj);
+                                //pressLeftMouseButtonToAttack(enemyObj);
                                 if (enemyObj != null) {
                                     preEnemyObject = enemyObj;
                                 }
+                                pressLeftMouseButtonToAttack(enemyObj);
                             }
                         }
                     }
@@ -96,8 +97,20 @@ public class SoldierActions : MonoBehaviour
             }
             SoldierType.Soldiers thisEnemyObj = enemyObj.GetComponent<Unit>().m_pSoldier;
             SoldierType.Soldiers mySoldier = selectedSoldier.GetComponent<Unit>().m_pSoldier;
-            int attack = mySoldier.getBasicAttack();
-            thisEnemyObj.setCurrentHP(attack);
+            int attack = mySoldier.getAttack();
+            int defense = thisEnemyObj.getDefense();
+            if (defense > 0) {
+                if (attack > defense)
+                {
+                    attack -= defense;
+                    thisEnemyObj.setDefense(0);
+                }
+                else {
+                    attack = 0;
+                    thisEnemyObj.modifyDefense(-attack);
+                }
+            }
+            thisEnemyObj.modifyHP(-attack);
             Debug.Log(thisEnemyObj.getCurrentHP());
             myCamShakeScript.shake(0.15f, 0.3f);
             actionModeName = null;
@@ -108,6 +121,10 @@ public class SoldierActions : MonoBehaviour
         if (Input.GetMouseButton(1))
         {
             actionModeName = null;
+
+            if (preEnemyObject == null) {
+                return;
+            }
             if (GameManager.Instance.getTurn() == 0)
             {
                 preEnemyObject.GetComponent<SpriteRenderer>().color = new Color(253, 0, 255);
@@ -127,13 +144,18 @@ public class SoldierActions : MonoBehaviour
                     actionModeName = "Attack";
                     GameObject newAttackArrow = Instantiate(attackArrow,selectedSoldier.transform.position,Quaternion.identity);
                     newAttackArrow.name = selectedSoldier.name + "_attackArrow";
+                    m_pUnit.setState(1);
                     break;
                 case "Defense":
                     actionModeName = "Defense";
                     int blockAttack = m_pUnit.getCurrentMoveStep();
+                    m_pUnit.setDefense(blockAttack);
                     m_pUnit.setCurrentMoveStep(0);
+                    m_pUnit.setState(2);
                     break;
                 case "LevelUP":
+                    actionModeName = "Defense";
+                    m_pUnit.setState(3);
                     break;
                 case "Sell":
                     if (GameManager.Instance.getTurn() == 0)
@@ -144,8 +166,111 @@ public class SoldierActions : MonoBehaviour
                         m_player2.setMoney(m_player2.getMoney() + m_pUnit.getMoneyBySellingEntity());
                     }
                     Destroy(selectedSoldier);
+                    m_pUnit.setState(4);
                     break;
             }
+        }
+    }
+
+    public void setAttackDistanceIndex() {
+        int a = GameManager.Instance.getUnitPosXIndex(selectedSoldier.name);
+        int b = GameManager.Instance.getUnitPosYIndex(selectedSoldier.name);
+        SoldierType.Soldiers mySoldier = selectedSoldier.GetComponent<Unit>().m_pSoldier;
+        if (mySoldier.getAttackDistance() == 1) {
+            if (b % 2 == 1)
+            {
+                checkEnemyWithinAttackDistance(a + 1, b);
+                checkEnemyWithinAttackDistance(a, b + 1);
+                checkEnemyWithinAttackDistance(a + 1, b + 1);
+                checkEnemyWithinAttackDistance(a + 1, b - 1);
+                checkEnemyWithinAttackDistance(a, b - 1);
+                checkEnemyWithinAttackDistance(a, b);
+                checkEnemyWithinAttackDistance(a - 1, b);
+            }
+            else
+            {
+                checkEnemyWithinAttackDistance(a, b + 1);
+                checkEnemyWithinAttackDistance(a + 1, b);
+                checkEnemyWithinAttackDistance(a - 1, b + 1);
+                checkEnemyWithinAttackDistance(a - 1, b);
+                checkEnemyWithinAttackDistance(a - 1, b - 1);
+                checkEnemyWithinAttackDistance(a, b - 1);
+                checkEnemyWithinAttackDistance(a, b);
+            }
+        } else if (mySoldier.getAttackDistance() == 2) {
+            if (b % 2 == 1)
+            {
+                checkEnemyWithinAttackDistance(a + 1, b);
+                checkEnemyWithinAttackDistance(a, b + 1);
+                checkEnemyWithinAttackDistance(a + 1, b + 1);
+                checkEnemyWithinAttackDistance(a + 1, b - 1);
+                checkEnemyWithinAttackDistance(a, b - 1);
+                checkEnemyWithinAttackDistance(a, b);
+                checkEnemyWithinAttackDistance(a - 1, b);
+                checkEnemyWithinAttackDistance(a + 2, b);
+                checkEnemyWithinAttackDistance(a + 2,b - 1);
+                checkEnemyWithinAttackDistance(a + 1, b - 2 );
+                checkEnemyWithinAttackDistance(a,b-2);
+                checkEnemyWithinAttackDistance(a-1,b-2 );
+                checkEnemyWithinAttackDistance(a-1,b-1 );
+                checkEnemyWithinAttackDistance(a-2,b );
+                checkEnemyWithinAttackDistance(a-1,b+1 );
+                checkEnemyWithinAttackDistance(a - 1,b+2 );
+                checkEnemyWithinAttackDistance(a,b+2 );
+                checkEnemyWithinAttackDistance(a + 1,b + 2);
+                checkEnemyWithinAttackDistance(a + 2, b + 1);
+
+            }
+            else
+            {
+                checkEnemyWithinAttackDistance(a, b + 1);
+                checkEnemyWithinAttackDistance(a + 1, b);
+                checkEnemyWithinAttackDistance(a - 1, b + 1);
+                checkEnemyWithinAttackDistance(a - 1, b);
+                checkEnemyWithinAttackDistance(a - 1, b - 1);
+                checkEnemyWithinAttackDistance(a, b - 1);
+                checkEnemyWithinAttackDistance(a, b);
+                checkEnemyWithinAttackDistance(a+2, b);
+                checkEnemyWithinAttackDistance(a+1,b-1 );
+                checkEnemyWithinAttackDistance(a+1,b-2 );
+                checkEnemyWithinAttackDistance(a,b-2 );
+                checkEnemyWithinAttackDistance(a-1,b-2 );
+                checkEnemyWithinAttackDistance(a-2,b-1 );
+                checkEnemyWithinAttackDistance(a-2, b);
+                checkEnemyWithinAttackDistance(a-2,b+1 );
+                checkEnemyWithinAttackDistance(a-1,b+2 );
+                checkEnemyWithinAttackDistance(a,b+2 );
+                checkEnemyWithinAttackDistance(a+1, b+2);
+                checkEnemyWithinAttackDistance(a+1, b+1);
+            }
+        }
+    }
+
+    
+    void checkEnemyWithinAttackDistance(int x, int y) {
+        int enemyXindex = GameManager.Instance.getUnitPosXIndex(preEnemyObject.name);
+        int enemyYindex = GameManager.Instance.getUnitPosYIndex(preEnemyObject.name);
+    }
+
+    //升级，最大血量和当前血量各加5
+    public void addHealth() {
+        if (selectedSoldier.GetComponent<Unit>() == null || selectedSoldier == null) { return; }
+        if (selectedSoldier.GetComponent<Unit>().beenUpgraded == false) {
+            SoldierType.Soldiers mySoldier = selectedSoldier.GetComponent<Unit>().m_pSoldier;
+            mySoldier.modifyMaxHP(5);
+            mySoldier.modifyHP(5);
+            selectedSoldier.GetComponent<Unit>().beenUpgraded = true;
+        }
+    }
+
+    //升级攻击力加5；
+    public void addAttack() {
+        if (selectedSoldier.GetComponent<Unit>() == null || selectedSoldier == null) { return; }
+        if (selectedSoldier.GetComponent<Unit>().beenUpgraded == false)
+        {
+            SoldierType.Soldiers mySoldier = selectedSoldier.GetComponent<Unit>().m_pSoldier;
+            mySoldier.modifyAttack(5);
+            selectedSoldier.GetComponent<Unit>().beenUpgraded = true;
         }
     }
 }

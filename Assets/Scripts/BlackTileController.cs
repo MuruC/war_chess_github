@@ -38,25 +38,74 @@ public class BlackTileController : MonoBehaviour
     void tilesAroundUnit() {
         int a = GameManager.Instance.getUnitPosXIndex(selectedUnitObject.name);
         int b = GameManager.Instance.getUnitPosYIndex(selectedUnitObject.name);
+        SoldierType.Soldiers mySoldier = selectedUnitObject.GetComponent<Unit>().m_pSoldier;
 
-        if (b % 2 == 1)
-        {
-            removeTiles(a + 1, b);
-            removeTiles(a, b + 1);
-            removeTiles(a + 1, b + 1);
-            removeTiles(a + 1, b - 1);
-            removeTiles(a, b - 1);
-            removeTiles(a, b);
-            removeTiles(a - 1, b);
-        }
-        else {
-            removeTiles(a, b + 1);
-            removeTiles(a + 1, b);
-            removeTiles(a - 1, b + 1);
-            removeTiles(a - 1, b);
-            removeTiles(a - 1, b - 1);
-            removeTiles(a, b - 1);
-            removeTiles(a, b);
+        if (mySoldier.getView() == 1) {
+            if (b % 2 == 1)
+            {
+                removeTiles(a + 1, b);
+                removeTiles(a, b + 1);
+                removeTiles(a + 1, b + 1);
+                removeTiles(a + 1, b - 1);
+                removeTiles(a, b - 1);
+                removeTiles(a, b);
+                removeTiles(a - 1, b);
+            }
+            else {
+                removeTiles(a, b + 1);
+                removeTiles(a + 1, b);
+                removeTiles(a - 1, b + 1);
+                removeTiles(a - 1, b);
+                removeTiles(a - 1, b - 1);
+                removeTiles(a, b - 1);
+                removeTiles(a, b);
+            }
+        } else if (mySoldier.getView() == 2) {
+            if (b % 2 == 1)
+            {
+                removeTiles(a + 1, b);
+                removeTiles(a, b + 1);
+                removeTiles(a + 1, b + 1);
+                removeTiles(a + 1, b - 1);
+                removeTiles(a, b - 1);
+                removeTiles(a, b);
+                removeTiles(a - 1, b);
+                removeTiles(a + 2, b);
+                removeTiles(a + 2, b - 1);
+                removeTiles(a + 1, b - 2);
+                removeTiles(a, b - 2);
+                removeTiles(a - 1, b - 2);
+                removeTiles(a - 1, b - 1);
+                removeTiles(a - 2, b);
+                removeTiles(a - 1, b + 1);
+                removeTiles(a - 1, b + 2);
+                removeTiles(a, b + 2);
+                removeTiles(a + 1, b + 2);
+                removeTiles(a + 2, b + 1);
+
+            }
+            else
+            {
+                removeTiles(a, b + 1);
+                removeTiles(a + 1, b);
+                removeTiles(a - 1, b + 1);
+                removeTiles(a - 1, b);
+                removeTiles(a - 1, b - 1);
+                removeTiles(a, b - 1);
+                removeTiles(a, b);
+                removeTiles(a + 2, b);
+                removeTiles(a + 1, b - 1);
+                removeTiles(a + 1, b - 2);
+                removeTiles(a, b - 2);
+                removeTiles(a - 1, b - 2);
+                removeTiles(a - 2, b - 1);
+                removeTiles(a - 2, b);
+                removeTiles(a - 2, b + 1);
+                removeTiles(a - 1, b + 2);
+                removeTiles(a, b + 2);
+                removeTiles(a + 1, b + 2);
+                removeTiles(a + 1, b + 1);
+            }
         }
     }
 

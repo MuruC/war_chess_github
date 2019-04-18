@@ -30,6 +30,8 @@ public class UIManager : MonoBehaviour
 
     [Header("Soldier Action")]
     public GameObject soldierActionPanel;
+    public GameObject attackButton;
+    public GameObject defenseButton;
 
     [Header("levelUpMenu")]
     public GameObject levelUpButton;
@@ -38,6 +40,11 @@ public class UIManager : MonoBehaviour
     public GameObject addhealthText;
     public GameObject addAttackButton;
     public GameObject addAttackText;
+
+    [Header("Ending")]
+    public GameObject endingScenePanel;
+    public Sprite orangeWin;
+    public Sprite purpleWin;
     // Start is called before the first frame update
     void Start()
     {

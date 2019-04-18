@@ -17,6 +17,7 @@ public class MouseController : MonoBehaviour
     PlayerAlign.Players player1;
     PlayerAlign.Players player2;
     PlayerAlign playerScript;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,7 +28,20 @@ public class MouseController : MonoBehaviour
         player1 = playerScript.m_Player1;
         player2 = playerScript.m_Player2;
     }
-
+    public void ReserStatuOnChangeTurn() {
+        soldierActionScript.Reset();
+        if (soldierActionScript.preEnemyObject)
+        {
+            if (GameManager.Instance.getTurn() == 0)
+            {
+                soldierActionScript.preEnemyObject.GetComponent<SpriteRenderer>().color = new Color(255, 185, 0);
+            }
+            else
+            {
+                soldierActionScript.preEnemyObject.GetComponent<SpriteRenderer>().color = new Color(253, 0, 255);
+            }
+        }
+    }
     public bool CheckIfHasSoldierInGrid()
     {
         RaycastHit2D[] hit = Physics2D.RaycastAll(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
@@ -70,8 +84,8 @@ public class MouseController : MonoBehaviour
                     if (ourHitObject.GetComponent<Unit>() != null)
                     {
                         if (ourHitObject.GetComponent<Unit>().unitAlign == GameManager.Instance.getTurn()) {
-                            mouseClickUnit(ourHitObject);
-                            clickUnit = true;
+                                mouseClickUnit(ourHitObject);
+                                clickUnit = true;
                         }
                     }
                     else if (ourHitObject.GetComponent<TileScript>() != null)
@@ -92,13 +106,19 @@ public class MouseController : MonoBehaviour
                 selectedUnit.thisUnitHasBeenClicked = false;
             }
         }
-
+        if (selectedUnitObject == null)
+        {
+            showUnitInformation(false);
+        }
+        else {
+            showUnitInformation(true);
+        }
     }
 
     void mouseClickHex(GameObject pTile) {
         if (Input.GetMouseButton(0))
         {
-            pTile.GetComponent<SpriteRenderer>().color = Color.red;
+            //pTile.GetComponent<SpriteRenderer>().color = Color.red;
             if(selectedUnit == null)
             {
                 return;
@@ -106,11 +126,11 @@ public class MouseController : MonoBehaviour
 
             SoldierType.Soldiers thisSelectedUnitType = selectedUnit.m_pSoldier;
             if (clickUnit == false && !CheckIfHasSoldierInGrid() && soldierActionScript.actionModeName != "Attack"
-               )
+               && thisSelectedUnitType.getCurrentMoveStep() > 0)
                 
             {
-                // && thisSelectedUnitType.getCurrentMoveStep() > 0
-                //if (selectedUnit.greenTiles.Contains(pTile)) {
+               
+                if (selectedUnit.greenTiles.Contains(pTile)) {
                     if (selectedUnitObject == null) { return; }
                     selectedUnit.destination = pTile.transform.position;
                     int x = GameManager.Instance.getTileIndexXDic(pTile.name);
@@ -119,9 +139,21 @@ public class MouseController : MonoBehaviour
                     GameManager.Instance.setUnitPosYIndex(selectedUnitObject.name, y);
                     selectedUnit.destinationXIndex = x;
                     selectedUnit.destinationYIndex = y;
+                    selectedUnit.indexX = x;
+                    selectedUnit.indexY = y;
                     Debug.Log("Destination: " + "xIndex: " + x + " yIndex: " + y);
+                if (selectedUnit.entityType == 1 || selectedUnit.entityType == 2 || selectedUnit.entityType == 4
+                    || selectedUnit.entityType == 6 || selectedUnit.entityType == 8) {
+                    SoundEffectManager.Instance.playAudio(4);
+                } else if (selectedUnit.entityType == 3)
+                {
+                    SoundEffectManager.Instance.playAudio(11);
+                } else if (selectedUnit.entityType == 7 || selectedUnit.entityType == 5)
+                {
+                    SoundEffectManager.Instance.playAudio(7);
+                }
                     //thisSelectedUnitType.setCurrentMoveStep(1);
-                //}
+                }
             }
         }
 
@@ -129,6 +161,9 @@ public class MouseController : MonoBehaviour
 
     void mouseClickUnit(GameObject pUnit)
     {
+        if (pUnit.GetComponent<Unit>().unitAlign != GameManager.Instance.getTurn()) {
+            return;
+        }
         if (Input.GetMouseButton(0))
         {
             UIManager.Instance.soldierActionPanel.SetActive(true);
@@ -147,19 +182,24 @@ public class MouseController : MonoBehaviour
                     }
                     GameObject.Find(selectedUnitName).GetComponent<Unit>().greenTiles.Clear();
                     GameObject.Find(selectedUnitName).GetComponent<Unit>().thisUnitHasBeenClicked = false;
-                    if (GameObject.Find(selectedUnitName).GetComponent<Unit>().unitAlign == 0)
+                    if (GameObject.Find(selectedUnitName).GetComponent<Unit>().unitAlign == 0 && GameManager.Instance.getTurn() == 0)
                     {
-                        GameObject.Find(selectedUnitName).GetComponent<SpriteRenderer>().color = new Color(255, 185, 0);
+                       GameObject.Find(selectedUnitName).GetComponent<SpriteRenderer>().color = new Color(255, 185, 0);
+                       // GameObject.Find(selectedUnitName).GetComponent<SpriteRenderer>().color = Color.white;
                     }
-                    else {
+                    else if(GameObject.Find(selectedUnitName).GetComponent<Unit>().unitAlign == 1 && GameManager.Instance.getTurn() == 1){
                         GameObject.Find(selectedUnitName).GetComponent<SpriteRenderer>().color = new Color(253, 0, 255);
+                        //GameObject.Find(selectedUnitName).GetComponent<SpriteRenderer>().color = Color.white;
                     }
-                   
+
                 }
                 selectedUnitName = unitName;
             }
             //*/
             showUnitInformation(true);
+            soldierActionScript.destroyAttackArrow();
+            ReserStatuOnChangeTurn();
+            resetBeenAttackedEnemyColor();
             // change tiles around the unit 改变周围六边形的颜色
             if (selectedUnit.m_pSoldier.getCurrentMoveStep() > 0) {
                 changeHexColor();
@@ -384,8 +424,6 @@ public class MouseController : MonoBehaviour
             GameManager.Instance.getTileObjectByIndex("xIndex_" + indexX.ToString() + "yIndex_" + IndexY.ToString()).GetComponent<SpriteRenderer>().color = Color.green;
         }
     }
-
-
     //显示士兵信息
     public  void showUnitInformation(bool bShowInformation) {
         if (selectedUnit == null) {
@@ -419,5 +457,17 @@ public class MouseController : MonoBehaviour
         }
     }
 
-
+    //使攻击状态下红色的人物返回原来的颜色
+    void resetBeenAttackedEnemyColor() {
+        if (soldierActionScript.preEnemyObject != null) {
+            if (GameManager.Instance.getTurn() == 0)
+            {
+                soldierActionScript.preEnemyObject.GetComponent<SpriteRenderer>().color = new Color(253, 0, 255);
+            }
+            else
+            {
+                soldierActionScript.preEnemyObject.GetComponent<SpriteRenderer>().color = new Color(255, 185, 0);
+            }
+        }
+    }
 }

@@ -24,6 +24,7 @@ public class CanvasController : MonoBehaviour
         selectedUnitObj = mouseControllerScript.selectedUnitObject;
         selectedUnit = selectedUnitObj.GetComponent<Unit>();
         inactiveLevelUpMenu();
+        inactiveActionButton();
     }
 
     public void openRecruitMenu() {
@@ -65,6 +66,21 @@ public class CanvasController : MonoBehaviour
             UIManager.Instance.addAttackText.GetComponent<Text>().color = Color.white;
             UIManager.Instance.addhealthButton.GetComponent<Image>().color = Color.white;
             UIManager.Instance.addhealthText.GetComponent<Text>().color = Color.white;
+        }
+    }
+
+    void inactiveActionButton() {
+        if (selectedUnit == null) {
+            return;
+        }
+        if (selectedUnit.m_pSoldier.getCurrentMoveStep() <= 0)
+        {
+            UIManager.Instance.attackButton.GetComponent<Image>().color = Color.grey;
+            UIManager.Instance.defenseButton.GetComponent<Image>().color = Color.grey;
+        }
+        else {
+            UIManager.Instance.attackButton.GetComponent<Image>().color = Color.white;
+            UIManager.Instance.defenseButton.GetComponent<Image>().color = Color.white;
         }
     }
 }

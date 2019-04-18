@@ -39,6 +39,10 @@ public class PlayerAlign : MonoBehaviour
         public int getXP() {
             return currentXP;
         }
+
+        public void modifyXP(int value) {
+            currentXP += value;
+        }
         public void setLevel(int newLevel) {
             currentLevel = newLevel;
         }
@@ -79,7 +83,7 @@ public class PlayerAlign : MonoBehaviour
 
         public void unlockSoldierTypes() {
             if (getLevel() == 1) {
-                for (int i = 0; i < 7; i++)
+                for (int i = 0; i < 6; i++)
                 {
                     UIManager.Instance.recruitSoldierTypeButton_off[i].SetActive(true);
                 }
@@ -91,7 +95,7 @@ public class PlayerAlign : MonoBehaviour
                 UIManager.Instance.recruitSoldierTypeButton_off[3].SetActive(true);
                 UIManager.Instance.recruitSoldierTypeButton_off[4].SetActive(true);
                 UIManager.Instance.recruitSoldierTypeButton_off[5].SetActive(true);
-                UIManager.Instance.recruitSoldierTypeButton_off[6].SetActive(true);
+                //UIManager.Instance.recruitSoldierTypeButton_off[6].SetActive(true);
             }
             if (getLevel() == 3) {
                 UIManager.Instance.recruitSoldierTypeButton_off[0].SetActive(false);
@@ -100,10 +104,10 @@ public class PlayerAlign : MonoBehaviour
                 UIManager.Instance.recruitSoldierTypeButton_off[3].SetActive(false);
                 UIManager.Instance.recruitSoldierTypeButton_off[4].SetActive(true);
                 UIManager.Instance.recruitSoldierTypeButton_off[5].SetActive(true);
-                UIManager.Instance.recruitSoldierTypeButton_off[6].SetActive(true);
+               // UIManager.Instance.recruitSoldierTypeButton_off[6].SetActive(true);
             }
             if (getLevel() == 4) {
-                for (int i = 0; i < 7; i++)
+                for (int i = 0; i < 6; i++)
                 {
                     UIManager.Instance.recruitSoldierTypeButton_off[i].SetActive(false);
                 }
@@ -165,6 +169,7 @@ public class PlayerAlign : MonoBehaviour
     public void setPlayer2(int nAlign)
     {
         m_Player2 = new PlayerAlign.Players(nAlign);
+        m_Player2.modifyMoney(-2);
         GameManager.Instance.myPlayer2 = m_Player2;
     }
 }

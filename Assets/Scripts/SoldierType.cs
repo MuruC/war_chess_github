@@ -43,6 +43,7 @@ public class SoldierType : MonoBehaviour
             currentMoveStep = getMaxMoveStep();
             currentDefense = 0;
             currentState = GlobaDef.eState_Normal;
+            attack = getBasicAttack();
         }
 
         //士兵当前状态
@@ -588,6 +589,11 @@ public class SoldierType : MonoBehaviour
         }
         public void setCurrentMoveStep(int move) {
             currentMoveStep = move;
+        }
+
+        public void modifyCurrentMoveStep(int value)
+        {
+            currentMoveStep += value;
         }
 
         public int getCurrentMoveStep() {

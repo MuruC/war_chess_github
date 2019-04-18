@@ -47,6 +47,8 @@ public class GameManager : MonoBehaviour
     public PlayerAlign.Players myPlayer1;
     public PlayerAlign.Players myPlayer2;
     PlayerAlign playerAlignScript;
+
+    public GameObject soldierAction;
     // Start is called before the first frame update
     void Start()
     {
@@ -181,6 +183,8 @@ public class GameManager : MonoBehaviour
         UIManager.Instance.soldierTypeImage.sprite = UIManager.Instance.noSprite;
         UIManager.Instance.currentMoveStep.GetComponent<Text>().text = null;
         UIManager.Instance.currentHP.GetComponent<Text>().text = null;
+
+
         //当现在的回合是橙色方，变成紫色方
         if (turn == 0)
         {
@@ -199,6 +203,7 @@ public class GameManager : MonoBehaviour
                     }
                     soldier2Dic.ElementAt(i).Value.GetComponent<Unit>().m_pSoldier.resetState();
                     soldier2Dic.ElementAt(i).Value.GetComponent<SpriteRenderer>().color = new Color(253, 0, 255);
+                    //soldier2Dic.ElementAt(i).Value.GetComponent<SpriteRenderer>().color = Color.white;
                 }
             }
             //*/
@@ -232,18 +237,31 @@ public class GameManager : MonoBehaviour
            // */
             if (soldier2Dic.Count > 0)
             {
-                for (int i = 0; i < soldier1Dic.Count; i++)
+                for (int i = 0; i < soldier2Dic.Count; i++)
                 {
                     if (soldier2Dic.ElementAt(i).Value == null) { return; }
                     soldier2Dic.ElementAt(i).Value.GetComponent<SpriteRenderer>().color = new Color(253, 0, 255);
+                    //soldier2Dic.ElementAt(i).Value.GetComponent<SpriteRenderer>().color = Color.white;
                 }
             }
         }
         restoreAllHexColor();
+        mouseControllerScript.ReserStatuOnChangeTurn();
+        if (soldierAction.GetComponent<SoldierActions>().preEnemyObject != null) {
+            soldierAction.GetComponent<SoldierActions>().preEnemyObject = null;
+        }
     }
 
     public int getTurn() {
         return turn;
+    }
+
+    public void modifyUnitDic(int turn, string name) {
+        if (turn == 0) {
+            soldier1Dic.Remove(name);
+        } else if (turn == 1) {
+            soldier2Dic.Remove(name);
+        }
     }
     //把所有的六边形变回原来的颜色
     public void restoreAllHexColor() {
@@ -315,7 +333,7 @@ public class GameManager : MonoBehaviour
         {
             if (getTurn() == 1)
             {
-                for (int i = 0; i < player1BlackTiles.Count; i++)
+                for (int i = 0; i < player2BlackTiles.Count; i++)
                 {
                     if (player2BlackTiles.ElementAt(i).Value == null) {
                         return;

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class Unit : MonoBehaviour
 {
     public Vector2 destination;
@@ -19,11 +19,16 @@ public class Unit : MonoBehaviour
     GameObject myPlayerAlign;
     PlayerAlign.Players m_player1;
     PlayerAlign.Players m_player2;
-
+    public int indexX;
+    public int indexY;
     public bool beenUpgraded;
+    public GameObject floatingText;
     // Start is called before the first frame update
     void Start()
     {
+        if (GameManager.Instance == null) {
+            return;
+        }
         destination = transform.position;
         greenTiles = new List<GameObject>();
         myPlayerAlign = GameObject.Find("Players");
@@ -70,6 +75,7 @@ public class Unit : MonoBehaviour
                 m_player1.setMoney(money + m_player1.getMoney());
                 m_player1.setXP(xp + m_player1.getXP());
             }
+            GameManager.Instance.modifyUnitDic(unitAlign,gameObject.name);
             Destroy(gameObject);
         }
     }
@@ -100,14 +106,36 @@ public class Unit : MonoBehaviour
             }
             pTile.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.terrainSprites[3];
             pTile.GetComponent<TileScript>().spriteType = 3;
+            GameObject popText = Instantiate(floatingText, transform.position, Quaternion.identity);
+            popText.GetComponent<TextMesh>().text = "Money+$15";
+            popText.GetComponent<TextMesh>().color = Color.yellow;
+            SoundEffectManager.Instance.playAudio(0);
         }
         //碰到奶牛图，血量+10
-        if (spriteType == 5) {
+        if (spriteType == 5)
+        {
             m_pSoldier.modifyHP(10);
             pTile.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.terrainSprites[0];
             pTile.GetComponent<TileScript>().spriteType = 0;
+            GameObject popText = Instantiate(floatingText, transform.position, Quaternion.identity);
+            popText.GetComponent<TextMesh>().text = "HP+10";
+            popText.GetComponent<TextMesh>().color = Color.green;
+            SoundEffectManager.Instance.playAudio(1);
         }
         m_pSoldier.setCurrentMoveStep(m_pSoldier.getCurrentMoveStep() - 1);
+
+        //到达终点
+        if (GameManager.Instance.getTurn() == 0) {
+            if (destinationXIndex == 7 && destinationYIndex == 11) {
+                UIManager.Instance.endingScenePanel.SetActive(true);
+                UIManager.Instance.endingScenePanel.GetComponent<Image>().sprite = UIManager.Instance.orangeWin;
+            }
+        } else if (GameManager.Instance.getTurn() == 1) {
+            if (destinationXIndex == 7 && destinationYIndex == 0) {
+                UIManager.Instance.endingScenePanel.SetActive(true);
+                UIManager.Instance.endingScenePanel.GetComponent<Image>().sprite = UIManager.Instance.purpleWin;
+            }
+        }
     }
 
     public void setEntity(int nType,int nAlign) {

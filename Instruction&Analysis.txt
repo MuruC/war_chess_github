@@ -1,0 +1,21 @@
+Instruction
+
+Click Recruitment button to buy soldier
+Click Soldier unit
+Green grids around unit are where soldier can go. One Move cost one steps
+Knight, Cannon, Tank cannot go to lake or mountain
+Cow grids add HP. Gold grids add money
+Click Attack button to attack
+Different types of soldiers have different attack distance
+Click Shield Button to defense
+Defence action will transform all steps into block.
+Click Up Arrow Button to level up. Add Max HP or attack
+Level Up costs XP. One unit can only be upgraded for once.
+Click Sell button to sell the unit
+The goal is to arrive at opponent's castle.
+
+
+Analysis
+Different audios of attack and move
+Camera shake and pop up text and particles make the game juicy
+The best grid mode in this class
